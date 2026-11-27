@@ -1,0 +1,46 @@
+body {
+            font-family: Arial, sans-serif;
+            background: #f8faf9;
+        }
+
+        .navbar {
+            background: white;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(120deg, #e8f5e9, #f1f8e9);
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 700;
+            color: #14532d;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #475569;
+        }
+
+        .btn-eco {
+            background: #198754;
+            color: white;
+        }
+
+        .btn-eco:hover {
+            background: #146c43;
+            color: white;
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }

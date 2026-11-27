@@ -1,0 +1,160 @@
+
+{% extends 'base_dashboard.html' %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold">Manage Donors</h2>
+        <p class="text-muted mb-0">
+            View and manage donor registrations under your organization.
+        </p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+
+            <div class="col-md-4">
+                <label class="form-label">Approval Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All Statuses</option>
+
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}"
+                            {% if selected_status == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Donor Type</label>
+                <select name="type" class="form-select">
+                    <option value="">All Types</option>
+
+                    {% for value, label in type_choices %}
+                        <option value="{{ value }}"
+                            {% if selected_type == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    Apply Filters
+                </button>
+
+                <a href="{% url 'donors:donor_list' %}"
+                   class="btn btn-outline-secondary">
+                    Reset
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- Donor Table -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between mb-3">
+            <h5 class="fw-bold">Donor Records</h5>
+            <span class="text-muted">
+                {{ donors|length }} result(s)
+            </span>
+        </div>
+
+        {% if donors %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Donor Name</th>
+                            <th>Donor Type</th>
+                            <th>Phone</th>
+                            <th>Zone</th>
+                            <th>Approval</th>
+                            <th>Account</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for donor in donors %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <strong>{{ donor.name }}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        {{ donor.user.username }}
+                                    </small>
+                                </td>
+
+                                <td>{{ donor.get_donor_type_display }}</td>
+                                <td>{{ donor.phone }}</td>
+                                <td>{{ donor.zone.name }}</td>
+
+                                <td>
+                                    {% if donor.status == 'APPROVED' %}
+                                        <span class="badge bg-success">
+                                            Approved
+                                        </span>
+                                    {% elif donor.status == 'PENDING' %}
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            Rejected
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if donor.is_active %}
+                                        <span class="badge bg-success">
+                                            Active
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            Inactive
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <a href="{% url 'donors:donor_detail' donor.pk %}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        View Details
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-people fs-1 text-muted"></i>
+                <h5 class="mt-3">No donors found</h5>
+                <p class="text-muted">
+                    No donor records match the selected filters.
+                </p>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

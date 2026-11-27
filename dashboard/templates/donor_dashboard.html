@@ -1,0 +1,8 @@
+<h1>Donor Dashboard</h1>
+
+<p>Welcome to your EcoTrack Donor Dashboard.</p>
+
+<form method="POST" action="{% url 'accounts:logout' %}">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>

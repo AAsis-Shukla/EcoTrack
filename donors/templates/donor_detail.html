@@ -1,0 +1,177 @@
+
+{% extends 'base_dashboard.html' %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold">Donor Details</h2>
+        <p class="text-muted mb-0">
+            Review donor information and manage their registration.
+        </p>
+    </div>
+
+    <a href="{% url 'donors:donor_list' %}"
+       class="btn btn-outline-secondary">
+        Back to Donors
+    </a>
+</div>
+
+<div class="row g-4">
+
+    <!-- Personal Information -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+
+                <h5 class="fw-bold mb-4">Personal Information</h5>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <small class="text-muted">Donor Name</small>
+                        <p class="fw-semibold">{{ donor.name }}</p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <small class="text-muted">Donor Type</small>
+                        <p class="fw-semibold">
+                            {{ donor.get_donor_type_display }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <small class="text-muted">Username</small>
+                        <p class="fw-semibold">{{ donor.user.username }}</p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <small class="text-muted">Phone</small>
+                        <p class="fw-semibold">{{ donor.phone }}</p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <small class="text-muted">Email</small>
+                        <p class="fw-semibold">
+                            {{ donor.email|default:"Not provided" }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <small class="text-muted">Registered On</small>
+                        <p class="fw-semibold">
+                            {{ donor.created_at|date:"d M Y, h:i A" }}
+                        </p>
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <h5 class="fw-bold mb-3">Address Information</h5>
+
+                <p><strong>Address:</strong> {{ donor.address }}</p>
+                <p><strong>City:</strong> {{ donor.city }}</p>
+                <p><strong>State:</strong> {{ donor.state }}</p>
+                <p><strong>Pincode:</strong> {{ donor.pincode }}</p>
+
+                <hr>
+
+                <h5 class="fw-bold mb-3">Organization Information</h5>
+
+                <p>
+                    <strong>Management:</strong>
+                    {{ donor.management.name }}
+                </p>
+
+                <p>
+                    <strong>Assigned Zone:</strong>
+                    {{ donor.zone.name }}
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Status -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+
+                <h5 class="fw-bold mb-3">Registration Status</h5>
+
+                <p>
+                    <strong>Approval:</strong>
+
+                    {% if donor.status == 'APPROVED' %}
+                        <span class="badge bg-success">Approved</span>
+                    {% elif donor.status == 'PENDING' %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    {% else %}
+                        <span class="badge bg-danger">Rejected</span>
+                    {% endif %}
+                </p>
+
+                <p>
+                    <strong>Account:</strong>
+                    {% if donor.is_active %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                    {% endif %}
+                </p>
+
+                <hr>
+
+                {% if donor.status == 'PENDING' %}
+
+                    <form method="POST"
+                          action="{% url 'donors:donor_approve' donor.pk %}"
+                          class="mb-2">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn btn-success w-100">
+                            Approve Registration
+                        </button>
+                    </form>
+
+                    <form method="POST"
+                          action="{% url 'donors:donor_reject' donor.pk %}"
+                          onsubmit="return confirm('Reject this donor registration?');">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn btn-outline-danger w-100">
+                            Reject Registration
+                        </button>
+                    </form>
+
+                {% elif donor.status == 'APPROVED' %}
+
+                    <form method="POST"
+                          action="{% url 'donors:donor_toggle_status' donor.pk %}"
+                          onsubmit="return confirm('Change this donor account status?');">
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="btn btn-outline-warning w-100">
+                            {% if donor.is_active %}
+                                Deactivate Account
+                            {% else %}
+                                Activate Account
+                            {% endif %}
+                        </button>
+                    </form>
+
+                {% else %}
+                    <p class="text-muted small">
+                        This registration has been rejected.
+                    </p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
